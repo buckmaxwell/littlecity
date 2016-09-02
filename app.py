@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS edits (id varchar, start_edit timestamp with time zon
 CREATE TABLE IF NOT EXISTS style_edits (id varchar, start_edit timestamp with time zone, 
     end_edit timestamp with time zone, text varchar);
 """
-conn = get_connection
+conn = get_connection()
 cur = conn.cursor()
 cur.execute(table_setup)
 conn.close()
