@@ -63,7 +63,7 @@ def edit_wait():
 	time_to_wait = 0
 
 	cur.execute("SELECT last_edit from edits order by last_edit desc limit 1")
-	last_edit_scheduled = cur.fetchone[0]
+	last_edit_scheduled = cur.fetchone()[0]
 
 	if last_edit_scheduled and last_edit_scheduled > datetime.datetime.now():
 		time_to_wait = (last_edit_scheduled - datetime.datetime.now()).total_seconds()
