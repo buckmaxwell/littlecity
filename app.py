@@ -57,7 +57,6 @@ def text():
     text = request.form['text']
     cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
     conn.commit()
-    #print request.form['text']
     conn.close()
     return 'redirecting you...', 302, {'Location': '/'}
 
@@ -160,8 +159,6 @@ def edit(edit_id):
 def main():
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT * from edits order by end_edit desc")
-    print cur.fetchall()
     cur.execute("SELECT text, end_edit from edits where text IS NOT NULL order by end_edit desc limit 1")
     try:
         last_text = cur.fetchone()[0]
@@ -257,7 +254,7 @@ def css_edit(edit_id):
     # Make sure the edit id is not expired
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute("SELECT end_edit from edits where id=%s limit 1;", (edit_id,))
+    cur.execute("SELECT end_edit from style_edits where id=%s limit 1;", (edit_id,))
 
     try:
         end_edit = cur.fetchone()[0]
