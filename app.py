@@ -131,7 +131,7 @@ def main():
 
     cur.execute("SELECT * from edits order by end_edit desc")
     print cur.fetchall()
-    cur.execute("SELECT text from edits where text !=null order by end_edit desc limit 1")
+    cur.execute("SELECT text, end_edit from edits where text !=null order by end_edit desc limit 1")
     try:
         last_text = cur.fetchone()[0]
     except:
