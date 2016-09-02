@@ -114,7 +114,7 @@ def edit(edit_id):
      <h1>Slate</h1>
      <h4>feel free to modify the text below</h4>
      
-     <textarea name="text" form="main" rows="100" cols="50">
+     <textarea name="text" form="main" rows="50" style="width=80%;">
      {text}
      </textarea>
      <input name="edit_id" type="hidden" value="{edit_id}">
