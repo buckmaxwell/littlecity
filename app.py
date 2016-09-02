@@ -50,7 +50,6 @@ def text():
     text = request.form['text']
     cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
     #print request.form['text']
-    last_text['text'] = request.form['text']
     return 'redirecting you...', 302, {'Location': '/'}
 
 
