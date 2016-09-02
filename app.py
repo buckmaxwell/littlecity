@@ -23,9 +23,9 @@ utc=pytz.UTC
 # Setup database
 table_setup = """
 CREATE TABLE IF NOT EXISTS edits (id varchar, start_edit timestamp with time zone, 
-	end_edit timestamp with time zone, text varchar);
+    end_edit timestamp with time zone, text varchar);
 CREATE TABLE IF NOT EXISTS style_edits (id varchar, start_edit timestamp with time zone, 
-	end_edit timestamp with time zone, text varchar);
+    end_edit timestamp with time zone, text varchar);
 """
 # create psycopg2 connection
 urlparse.uses_netloc.append("postgres")
@@ -45,44 +45,44 @@ cur.execute(table_setup)
 
 @app.route('/text', methods=['POST'])
 def text():
-	# update the postgresql record
-	edit_id = request.form['edit_id']
-	text = request.form['text']
-	cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
-	#print request.form['text']
-	last_text['text'] = request.form['text']
-	return 'redirecting you...', 302, {'Location': '/'}
+    # update the postgresql record
+    edit_id = request.form['edit_id']
+    text = request.form['text']
+    cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
+    #print request.form['text']
+    last_text['text'] = request.form['text']
+    return 'redirecting you...', 302, {'Location': '/'}
 
 
 @app.route('/text/edit', methods=['GET'])
 def edit_wait():
-	edit_id = str(uuid.uuid4())
-	#edit = dict(id=edit_id, start_edit=None, end_edit=None)
+    edit_id = str(uuid.uuid4())
+    #edit = dict(id=edit_id, start_edit=None, end_edit=None)
 
-	time_to_wait = 0
+    time_to_wait = 0
 
-	cur.execute("SELECT end_edit from edits order by end_edit desc limit 1")
-	try:
-		last_edit_scheduled = cur.fetchone()[0]
-	except:
-		last_edit_scheduled = None
+    cur.execute("SELECT end_edit from edits order by end_edit desc limit 1")
+    try:
+        last_edit_scheduled = cur.fetchone()[0]
+    except:
+        last_edit_scheduled = None
 
-	if last_edit_scheduled and last_edit_scheduled > utc.localize(datetime.datetime.utcnow()):
-		time_to_wait = (last_edit_scheduled - utc.localize(datetime.datetime.utcnow())).total_seconds()
+    if last_edit_scheduled and last_edit_scheduled > utc.localize(datetime.datetime.utcnow()):
+        time_to_wait = (last_edit_scheduled - utc.localize(datetime.datetime.utcnow())).total_seconds()
 
-	start_edit = utc.localize(datetime.datetime.utcnow()) +\
-						 datetime.timedelta(seconds=time_to_wait)
+    start_edit = utc.localize(datetime.datetime.utcnow()) +\
+                         datetime.timedelta(seconds=time_to_wait)
 
-	end_edit = utc.localize(datetime.datetime.utcnow()) +\
-					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
+    end_edit = utc.localize(datetime.datetime.utcnow()) +\
+                       datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
-	# add the record to postgressql
-	cur.execute("INSERT INTO edits (id, start_edit, end_edit) values (%s, %s, %s);",
-	 (edit_id, start_edit, end_edit))
+    # add the record to postgressql
+    cur.execute("INSERT INTO edits (id, start_edit, end_edit) values (%s, %s, %s);",
+     (edit_id, start_edit, end_edit))
 
-	result =  """
-	<html>
-	<head>
+    result =  """
+    <html>
+    <head>
         <h1>Slate</h1>
         <h4>please wait while others finish editing.  If you refresh this page 
         you will lose you spot in line.  At the right time, you will be redirected</h4>
@@ -91,17 +91,17 @@ def edit_wait():
     </head>
     <body>
     <p>""".format(wait=time_to_wait, edit_id=edit_id)
-	return result, 200, headers
+    return result, 200, headers
 
 
 @app.route('/text/edit/<edit_id>', methods=['GET'])
 def edit(edit_id):
 
-	cur.execute("SELECT text from edits order by end_edit desc limit 1")
-	try:
-		last_text = cur.fetchone()[0]
-	except:
-		last_text = 'Start us off why don\'nt you'
+    cur.execute("SELECT text from edits order by end_edit desc limit 1")
+    try:
+        last_text = cur.fetchone()[0]
+    except:
+        last_text = 'Start us off why don\'nt you'
 
     result = """
     <html>
@@ -110,9 +110,9 @@ def edit(edit_id):
         <meta http-equiv="refresh" content="{time_per_edit}; url=/" />
     </head>
     <body>
-	<form id="main" action="/text" method="post">
+    <form id="main" action="/text" method="post">
 
-	 <h1>Slate</h1>
+     <h1>Slate</h1>
      <h4>feel free to modify the text below</h4>
      
      <textarea name="text" form="main" rows="100" cols="50">
@@ -130,11 +130,11 @@ def edit(edit_id):
 @app.route("/")
 def main():
 
-	cur.execute("SELECT text from edits order by end_edit desc limit 1")
-	try:
-		last_text = cur.fetchone()[0]
-	except:
-		last_text = 'Start us off why don\'nt you'
+    cur.execute("SELECT text from edits order by end_edit desc limit 1")
+    try:
+        last_text = cur.fetchone()[0]
+    except:
+        last_text = 'Start us off why don\'nt you'
 
     stylesheet = url_for('static', filename='style.css')
     return """
@@ -160,43 +160,43 @@ def main():
 
 @app.route('/css', methods=['POST'])
 def css():
-	# update the postgresql record
-	edit_id = request.form['edit_id']
-	text = request.form['text']
-	cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
-	with open('static/style.css', 'w+') as f:
-		f.write(request.form['text'])
+    # update the postgresql record
+    edit_id = request.form['edit_id']
+    text = request.form['text']
+    cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
+    with open('static/style.css', 'w+') as f:
+        f.write(request.form['text'])
 
-	return 'redirecting you...', 302, {'Location': '/'}
+    return 'redirecting you...', 302, {'Location': '/'}
 
 
 @app.route('/css/edit', methods=['GET'])
 def css_edit_wait():
-	edit_id = str(uuid.uuid4())
-	time_to_wait = 0
+    edit_id = str(uuid.uuid4())
+    time_to_wait = 0
 
-	cur.execute("SELECT end_edit from style_edits order by end_edit desc limit 1")
-	try:
-		last_edit_scheduled = cur.fetchone()[0]
-	except:
-		last_edit_scheduled = None
+    cur.execute("SELECT end_edit from style_edits order by end_edit desc limit 1")
+    try:
+        last_edit_scheduled = cur.fetchone()[0]
+    except:
+        last_edit_scheduled = None
 
-	if last_edit_scheduled and last_edit_scheduled > utc.localize(datetime.datetime.utcnow()):
-		time_to_wait = (last_edit_scheduled - utc.localize(datetime.datetime.utcnow())).total_seconds()
+    if last_edit_scheduled and last_edit_scheduled > utc.localize(datetime.datetime.utcnow()):
+        time_to_wait = (last_edit_scheduled - utc.localize(datetime.datetime.utcnow())).total_seconds()
 
-	start_edit = utc.localize(datetime.datetime.utcnow()) +\
-						 datetime.timedelta(seconds=time_to_wait)
+    start_edit = utc.localize(datetime.datetime.utcnow()) +\
+                         datetime.timedelta(seconds=time_to_wait)
 
-	end_edit = utc.localize(datetime.datetime.utcnow()) +\
-					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
+    end_edit = utc.localize(datetime.datetime.utcnow()) +\
+                       datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
-	# add the record to postgressql
-	cur.execute("INSERT INTO style_edits (id, start_edit, end_edit) values (%s, %s, %s);",
-	 (edit_id, start_edit, end_edit))
+    # add the record to postgressql
+    cur.execute("INSERT INTO style_edits (id, start_edit, end_edit) values (%s, %s, %s);",
+     (edit_id, start_edit, end_edit))
 
-	result =  """
-	<html>
-	<head>
+    result =  """
+    <html>
+    <head>
         <h1>Slate</h1>
         <h4>please wait while others finish editing.  If you refresh this page 
         you will lose you spot in line.  At the right time, you will be redirected</h4>
@@ -205,7 +205,7 @@ def css_edit_wait():
     </head>
     <body>
     <p>""".format(wait=time_to_wait, edit_id=edit_id)
-	return result, 200, headers
+    return result, 200, headers
 
 
 @app.route('/css/edit/<edit_id>', methods=['GET'])
@@ -220,9 +220,9 @@ def css_edit(edit_id):
         <meta http-equiv="refresh" content="{time_per_edit}; url=/" />
     </head>
     <body>
-	<form id="main" action="/css" method="post">
+    <form id="main" action="/css" method="post">
 
-	 <h1>Slate</h1>
+     <h1>Slate</h1>
      <h4>feel free to modify the text below</h4>
      
      <textarea name="text" form="main" rows="100" cols="50">
@@ -239,10 +239,10 @@ def css_edit(edit_id):
 
 @app.route("/css")
 def css_main():
-	with open('style.css', 'r') as f:
-		style_sheet = f.read()
-	
-	return "{}".format(style_sheet)
+    with open('style.css', 'r') as f:
+        style_sheet = f.read()
+    
+    return "{}".format(style_sheet)
 
 
 
