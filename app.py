@@ -11,6 +11,7 @@ import urlparse
 # set expires to some time in the past to avoid browser caching
 headers = {'Expires': 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'}
 app = Flask(__name__)
+app.config['DEBUG'] = True
 
 last_text = {'text':'LAST TEXT', 'last_edit_scheduled':None}  # last edit scheduled is the end time of the 
 															  # last edit scheduled
