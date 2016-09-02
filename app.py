@@ -150,29 +150,39 @@ def main():
 
 @app.route('/css', methods=['POST'])
 def css():
-	print request.form['text']
-	#last_css['css'] = request.form['css']
+	# update the postgresql record
+	edit_id = request.form['edit_id']
+	text = request.form['text']
+	cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
 	with open('static/style.css', 'w+') as f:
 		f.write(request.form['text'])
+
 	return 'redirecting you...', 302, {'Location': '/'}
 
 
 @app.route('/css/edit', methods=['GET'])
 def css_edit_wait():
 	edit_id = str(uuid.uuid4())
-	edit = dict(id=edit_id, start_edit=None, end_edit=None)
 	time_to_wait = 0
 
-	if last_css['last_edit_scheduled'] and last_css['last_edit_scheduled'] > utc.localize(datetime.datetime.utcnow()):
-		time_to_wait = (last_css['last_edit_scheduled'] - utc.localize(datetime.datetime.utcnow())).total_seconds()
+	cur.execute("SELECT end_edit from style_edits order by end_edit desc limit 1")
+	try:
+		last_edit_scheduled = cur.fetchone()[0]
+	except:
+		last_edit_scheduled = None
 
-	edit['start_edit'] = utc.localize(datetime.datetime.utcnow()) +\
+	if last_edit_scheduled and last_edit_scheduled > utc.localize(datetime.datetime.utcnow()):
+		time_to_wait = (last_edit_scheduled - utc.localize(datetime.datetime.utcnow())).total_seconds()
+
+	start_edit = utc.localize(datetime.datetime.utcnow()) +\
 						 datetime.timedelta(seconds=time_to_wait)
 
-	edit['end_edit'] = utc.localize(datetime.datetime.utcnow()) +\
+	end_edit = utc.localize(datetime.datetime.utcnow()) +\
 					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
-	last_css['last_edit_scheduled'] = edit['end_edit']
+	# add the record to postgressql
+	cur.execute("INSERT INTO style_edits (id, start_edit, end_edit) values (%s, %s, %s);",
+	 (edit_id, start_edit, end_edit))
 
 	result =  """
 	<html>
