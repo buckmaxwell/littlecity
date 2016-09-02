@@ -9,6 +9,7 @@ import os
 import psycopg2
 import urlparse
 
+
 # set expires to some time in the past to avoid browser caching
 headers = {'Expires': 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'}
 app = Flask(__name__)
@@ -22,6 +23,13 @@ style_edits = OrderedDict()
 time_per_edit = 25
 
 
+# Setup database
+table_setup = """
+CREATE TABLE IF NOT EXISTS edits (id varchar, start_edit timestamp with time zone, 
+	end_edit timestamp with time zone, text varchar);
+CREATE TABLE IF NOT EXISTS style_edits (id varchar, start_edit timestamp with time zone, 
+	end_edit timestamp with time zone, text varchar);
+"""
 # create psycopg2 connection
 urlparse.uses_netloc.append("postgres")
 url = urlparse.urlparse(os.environ["DATABASE_URL"])
@@ -32,13 +40,19 @@ conn = psycopg2.connect(
     host=url.hostname,
     port=url.port
 )
+cur = conn.cursor()
+cur.execute(table_setup)
 
 
 # TEXT EDITING ##########################################################################################
 
 @app.route('/text', methods=['POST'])
 def text():
-	print request.form['text']
+	# update the postgresql record
+	edit_id = request.form['edit_id']
+	text = request.form['text']
+	cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
+	#print request.form['text']
 	last_text['text'] = request.form['text']
 	return 'redirecting you...', 302, {'Location': '/'}
 
@@ -46,19 +60,25 @@ def text():
 @app.route('/text/edit', methods=['GET'])
 def edit_wait():
 	edit_id = str(uuid.uuid4())
-	edit = dict(id=edit_id, start_edit=None, end_edit=None)
+	#edit = dict(id=edit_id, start_edit=None, end_edit=None)
+
 	time_to_wait = 0
 
-	if last_text['last_edit_scheduled'] and last_text['last_edit_scheduled'] > datetime.datetime.now():
-		time_to_wait = (last_text['last_edit_scheduled'] - datetime.datetime.now()).total_seconds()
+	cur.execute("SELECT last_edit from edits order by last_edit desc limit 1")
+	last_edit_scheduled = cur.fetchone[0]
 
-	edit['start_edit'] = datetime.datetime.now() +\
+	if last_edit_scheduled and last_edit_scheduled > datetime.datetime.now():
+		time_to_wait = (last_edit_scheduled - datetime.datetime.now()).total_seconds()
+
+	start_edit = datetime.datetime.now() +\
 						 datetime.timedelta(seconds=time_to_wait)
 
-	edit['end_edit'] = datetime.datetime.now() +\
+	end_edit = datetime.datetime.now() +\
 					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
-	last_text['last_edit_scheduled'] = edit['end_edit']
+	# add the record to postgressql
+	cur.execute("INSERT INTO edits (id, start_edit, end_edit) values (%s, %s, %s);",
+	 (edit_id, start_edit, end_edit))
 
 	result =  """
 	<html>
