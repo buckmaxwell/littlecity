@@ -3,7 +3,11 @@ from flask import Flask, request, url_for
 import datetime
 from collections import OrderedDict
 import uuid
+from wsgiref.handlers import format_date_time
+from time import mktime
 
+# set expires to some time in the past to avoid browser caching
+headers = {'Expires': 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'}
 
 app = Flask(__name__)
 
@@ -54,7 +58,7 @@ def edit_wait():
     </head>
     <body>
     <p>""".format(wait=time_to_wait, edit_id=edit_id)
-	return result
+	return result, 200, headers
 
 
 @app.route('/text/edit/<edit_id>', methods=['GET'])
@@ -80,7 +84,7 @@ def edit(edit_id):
     </body>
     </html>
     """.format(text=last_text['text'], edit_id=edit_id, time_per_edit=time_per_edit )
-    return result
+    return result, 200, headers
 
 
 @app.route("/")
@@ -144,7 +148,7 @@ def css_edit_wait():
     </head>
     <body>
     <p>""".format(wait=time_to_wait, edit_id=edit_id)
-	return result
+	return result, 200, headers
 
 
 @app.route('/css/edit/<edit_id>', methods=['GET'])
@@ -173,7 +177,7 @@ def css_edit(edit_id):
     </body>
     </html>
     """.format(text=style_sheet, edit_id=edit_id, time_per_edit=time_per_edit )
-    return result
+    return result, 200, headers
 
 
 @app.route("/css")
