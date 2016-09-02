@@ -50,14 +50,21 @@ def get_connection():
 
 @app.route('/text', methods=['POST'])
 def text():
-    conn = get_connection()
-    cur = conn.cursor()
+    
     # update the postgresql record
     edit_id = request.form['edit_id']
     text = request.form['text']
-    cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
-    conn.commit()
-    conn.close()
+
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        text.decode('ascii')
+        cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
+        conn.commit()
+        conn.close()
+    except UnicodeDecodeError:
+        print "it was not a ascii-encoded unicode string"
+
     return 'redirecting you...', 302, {'Location': '/'}
 
 
@@ -190,16 +197,26 @@ def main():
 
 @app.route('/css', methods=['POST'])
 def css():
-    conn = get_connection()
-    cur = conn.cursor()
-    # update the postgresql record
-    edit_id = request.form['edit_id']
-    text = request.form['text']
-    cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
-    conn.commit()
-    with open('static/style.css', 'w+') as f:
-        f.write(request.form['text'])
-    conn.close()
+
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+        #    update the postgresql record
+
+        text.decode('ascii')
+
+
+        edit_id = request.form['edit_id']
+        text = request.form['text']
+        cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
+        conn.commit()
+        with open('static/style.css', 'w+') as f:
+            f.write(request.form['text'])
+
+        conn.close()
+    except UnicodeDecodeError:
+        print "string is not ascii"
+    
     return 'redirecting you...', 302, {'Location': '/'}
 
 
