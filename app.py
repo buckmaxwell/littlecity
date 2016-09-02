@@ -3,8 +3,6 @@ from flask import Flask, request, url_for
 import datetime
 from collections import OrderedDict
 import uuid
-from wsgiref.handlers import format_date_time
-from time import mktime
 import os
 import psycopg2
 import urlparse
