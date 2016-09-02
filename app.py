@@ -119,7 +119,7 @@ def edit(edit_id):
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
             return "End time already expired", 400
         else:
-            time_per_edit = (end_time - utc.localize(datetime.datetime.utcnow())).total_seconds()
+            time_per_edit = (end_edit - utc.localize(datetime.datetime.utcnow())).total_seconds()
     except Exception as e:
         print e
 
@@ -261,7 +261,7 @@ def css_edit(edit_id):
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
             return "End time already expired", 400
         else:
-            time_per_edit = (end_time - utc.localize(datetime.datetime.utcnow())).total_seconds()
+            time_per_edit = (end_edit - utc.localize(datetime.datetime.utcnow())).total_seconds()
     except:
         return "Edit id does not exist....", 404
 
