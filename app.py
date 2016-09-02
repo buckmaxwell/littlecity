@@ -33,17 +33,17 @@ def get_connection():
 
 
 # Setup database
-table_setup = """
-CREATE TABLE IF NOT EXISTS edits (id varchar, start_edit timestamp with time zone, 
-    end_edit timestamp with time zone, text varchar);
-CREATE TABLE IF NOT EXISTS style_edits (id varchar, start_edit timestamp with time zone, 
-    end_edit timestamp with time zone, text varchar);
-"""
-conn = get_connection()
-cur = conn.cursor()
-cur.execute(table_setup)
-conn.close()
 
+#table_setup = """
+#CREATE TABLE IF NOT EXISTS edits (id varchar, start_edit timestamp with time zone, 
+#    end_edit timestamp with time zone, text varchar);
+#CREATE TABLE IF NOT EXISTS style_edits (id varchar, start_edit timestamp with time zone, 
+#    end_edit timestamp with time zone, text varchar);
+#"""
+#conn = get_connection()
+#cur = conn.cursor()
+#cur.execute(table_setup)
+#conn.close()
 
 
 # TEXT EDITING ##########################################################################################
