@@ -182,7 +182,7 @@ def main():
      <form action="{about}" method="get"><input type="submit" value="About"></form>
      </body>
      </html>
-    """.format(text=last_text, stylesheet=stylesheet)
+    """.format(text=last_text, stylesheet=stylesheet, about=about)
 
 
 # CSS EDITING #############################################################################################
