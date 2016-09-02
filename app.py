@@ -69,13 +69,13 @@ def edit_wait():
 	except:
 		last_edit_scheduled = None
 
-	if last_edit_scheduled and last_edit_scheduled > datetime.datetime.now():
-		time_to_wait = (last_edit_scheduled - datetime.datetime.now()).total_seconds()
+	if last_edit_scheduled and last_edit_scheduled > datetime.datetime.utcnow():
+		time_to_wait = (last_edit_scheduled - datetime.datetime.utcnow()).total_seconds()
 
-	start_edit = datetime.datetime.now() +\
+	start_edit = datetime.datetime.utcnow() +\
 						 datetime.timedelta(seconds=time_to_wait)
 
-	end_edit = datetime.datetime.now() +\
+	end_edit = datetime.datetime.utcnow() +\
 					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
 	# add the record to postgressql
@@ -161,13 +161,13 @@ def css_edit_wait():
 	edit = dict(id=edit_id, start_edit=None, end_edit=None)
 	time_to_wait = 0
 
-	if last_css['last_edit_scheduled'] and last_css['last_edit_scheduled'] > datetime.datetime.now():
-		time_to_wait = (last_css['last_edit_scheduled'] - datetime.datetime.now()).total_seconds()
+	if last_css['last_edit_scheduled'] and last_css['last_edit_scheduled'] > datetime.datetime.utcnow():
+		time_to_wait = (last_css['last_edit_scheduled'] - datetime.datetime.utcnow()).total_seconds()
 
-	edit['start_edit'] = datetime.datetime.now() +\
+	edit['start_edit'] = datetime.datetime.utcnow() +\
 						 datetime.timedelta(seconds=time_to_wait)
 
-	edit['end_edit'] = datetime.datetime.now() +\
+	edit['end_edit'] = datetime.datetime.utcnow() +\
 					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
 	last_css['last_edit_scheduled'] = edit['end_edit']
