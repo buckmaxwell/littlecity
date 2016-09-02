@@ -112,7 +112,7 @@ def edit(edit_id):
     cur = conn.cursor()
 
     # Make sure the edit id is not expired
-    cur.execute("SELECT end_edit from edits where id == %s limit 1", (edit_id,))
+    cur.execute("SELECT end_edit from edits where id=%s limit 1", (edit_id,))
     try:
         end_edit = cur.fetchone()[0]
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
@@ -252,7 +252,7 @@ def css_edit(edit_id):
         style_sheet = f.read()
 
     # Make sure the edit id is not expired
-    cur.execute("SELECT end_edit from edits where id == %s limit 1", (edit_id,))
+    cur.execute("SELECT end_edit from edits where id=%s limit 1", (edit_id,))
     try:
         end_edit = cur.fetchone()[0]
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
