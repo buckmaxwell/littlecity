@@ -14,10 +14,6 @@ headers = {'Expires': 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'}
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-last_text = {'text':'LAST TEXT', 'last_edit_scheduled':None}  # last edit scheduled is the end time of the 
-															  # last edit scheduled
-last_css = {'text':'h1 {color: red;}', 'last_edit_scheduled':None}
-
 edits = OrderedDict()  # {id:UUID, start_edit:datetime, end_edit:datetime, text=str}
 style_edits = OrderedDict()
 time_per_edit = 25
@@ -100,6 +96,13 @@ def edit_wait():
 
 @app.route('/text/edit/<edit_id>', methods=['GET'])
 def edit(edit_id):
+
+	cur.execute("SELECT text from edits order by end_edit desc limit 1")
+	try:
+		last_text = cur.fetchone()[0]
+	except:
+		last_text = 'Start us off why don\'nt you'
+
     result = """
     <html>
     <head>
@@ -120,12 +123,19 @@ def edit(edit_id):
     </form>
     </body>
     </html>
-    """.format(text=last_text['text'], edit_id=edit_id, time_per_edit=time_per_edit )
+    """.format(text=last_text, edit_id=edit_id, time_per_edit=time_per_edit )
     return result, 200, headers
 
 
 @app.route("/")
 def main():
+
+	cur.execute("SELECT text from edits order by end_edit desc limit 1")
+	try:
+		last_text = cur.fetchone()[0]
+	except:
+		last_text = 'Start us off why don\'nt you'
+
     stylesheet = url_for('static', filename='style.css')
     return """
      <html>
@@ -142,7 +152,7 @@ def main():
      <form action="css/edit" method="get"><input type="submit" value="Edit CSS"></form>
      </body>
      </html>
-    """.format(text=last_text['text'], stylesheet=stylesheet)
+    """.format(text=last_text, stylesheet=stylesheet)
 
 
 # CSS EDITING #############################################################################################
