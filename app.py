@@ -166,6 +166,7 @@ def main():
         last_text = 'Start us off why don\'t you'
 
     stylesheet = url_for('static', filename='style.css')
+    about = url_for('static', filename='about.html')
     conn.close()
     return """
      <html>
@@ -178,6 +179,7 @@ def main():
      {text}
      <form action="text/edit" method="get"><input type="submit" value="Edit Text"></form>
      <form action="css/edit" method="get"><input type="submit" value="Edit CSS"></form>
+     <form action="{about}" method="get"><input type="submit" value="About"></form>
      </body>
      </html>
     """.format(text=last_text, stylesheet=stylesheet)
