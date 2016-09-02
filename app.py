@@ -130,10 +130,12 @@ def edit(edit_id):
 def main():
 
     cur.execute("SELECT text from edits where text !=null order by end_edit desc limit 1")
+    print cur.fetchall()
+    cur.execute("SELECT text from edits where text !=null order by end_edit desc limit 1")
     try:
         last_text = cur.fetchone()[0]
     except:
-        last_text = 'Start us off why do\'nt you'
+        last_text = 'Start us off why don\'t you'
 
     stylesheet = url_for('static', filename='style.css')
     return """
