@@ -56,6 +56,7 @@ def text():
     edit_id = request.form['edit_id']
     text = request.form['text']
     cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
+    conn.commit()
     #print request.form['text']
     conn.close()
     return 'redirecting you...', 302, {'Location': '/'}
@@ -88,6 +89,7 @@ def edit_wait():
     # add the record to postgressql
     cur.execute("INSERT INTO edits (id, start_edit, end_edit) values (%s, %s, %s);",
      (edit_id, start_edit, end_edit))
+    conn.commit()
 
     result =  """
     <html>
@@ -182,6 +184,7 @@ def css():
     edit_id = request.form['edit_id']
     text = request.form['text']
     cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
+    conn.commit()
     with open('static/style.css', 'w+') as f:
         f.write(request.form['text'])
     conn.close()
@@ -214,6 +217,7 @@ def css_edit_wait():
     # add the record to postgressql
     cur.execute("INSERT INTO style_edits (id, start_edit, end_edit) values (%s, %s, %s);",
      (edit_id, start_edit, end_edit))
+    conn.commit()
 
     result =  """
     <html>
