@@ -6,6 +6,7 @@ import uuid
 import os
 import psycopg2
 import urlparse
+import pytz
 
 
 # set expires to some time in the past to avoid browser caching
@@ -20,6 +21,7 @@ last_css = {'text':'h1 {color: red;}', 'last_edit_scheduled':None}
 edits = OrderedDict()  # {id:UUID, start_edit:datetime, end_edit:datetime, text=str}
 style_edits = OrderedDict()
 time_per_edit = 25
+utc=pytz.UTC
 
 
 # Setup database
@@ -69,13 +71,13 @@ def edit_wait():
 	except:
 		last_edit_scheduled = None
 
-	if last_edit_scheduled and last_edit_scheduled > datetime.datetime.utcnow():
-		time_to_wait = (last_edit_scheduled - datetime.datetime.utcnow()).total_seconds()
+	if last_edit_scheduled and last_edit_scheduled > utc.localize(datetime.datetime.utcnow()):
+		time_to_wait = (last_edit_scheduled - utc.localize(datetime.datetime.utcnow())).total_seconds()
 
-	start_edit = datetime.datetime.utcnow() +\
+	start_edit = utc.localize(datetime.datetime.utcnow()) +\
 						 datetime.timedelta(seconds=time_to_wait)
 
-	end_edit = datetime.datetime.utcnow() +\
+	end_edit = utc.localize(datetime.datetime.utcnow()) +\
 					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
 	# add the record to postgressql
@@ -161,13 +163,13 @@ def css_edit_wait():
 	edit = dict(id=edit_id, start_edit=None, end_edit=None)
 	time_to_wait = 0
 
-	if last_css['last_edit_scheduled'] and last_css['last_edit_scheduled'] > datetime.datetime.utcnow():
-		time_to_wait = (last_css['last_edit_scheduled'] - datetime.datetime.utcnow()).total_seconds()
+	if last_css['last_edit_scheduled'] and last_css['last_edit_scheduled'] > utc.localize(datetime.datetime.utcnow()):
+		time_to_wait = (last_css['last_edit_scheduled'] - utc.localize(datetime.datetime.utcnow())).total_seconds()
 
-	edit['start_edit'] = datetime.datetime.utcnow() +\
+	edit['start_edit'] = utc.localize(datetime.datetime.utcnow()) +\
 						 datetime.timedelta(seconds=time_to_wait)
 
-	edit['end_edit'] = datetime.datetime.utcnow() +\
+	edit['end_edit'] = utc.localize(datetime.datetime.utcnow()) +\
 					   datetime.timedelta(seconds=time_to_wait + time_per_edit)
 
 	last_css['last_edit_scheduled'] = edit['end_edit']
