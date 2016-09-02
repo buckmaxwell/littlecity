@@ -255,15 +255,21 @@ def css_edit(edit_id):
         style_sheet = f.read()
 
     # Make sure the edit id is not expired
+    conn = get_connection()
+    cur = conn.cursor()
     cur.execute("SELECT end_edit from edits where id=%s limit 1;", (edit_id,))
+
     try:
         end_edit = cur.fetchone()[0]
+        conn.close()
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
             return "End time already expired", 400
         else:
             time_per_edit = (end_edit - utc.localize(datetime.datetime.utcnow())).total_seconds()
+            conn.close()
     except:
         return "Edit id does not exist....", 404
+
 
     result = """
     <html>
