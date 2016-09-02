@@ -267,7 +267,8 @@ def css_edit(edit_id):
         else:
             time_per_edit = (end_edit - utc.localize(datetime.datetime.utcnow())).total_seconds()
             conn.close()
-    except:
+    except Exception as e:
+        print e
         return "Edit id does not exist....", 404
 
 
