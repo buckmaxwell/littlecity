@@ -93,10 +93,14 @@ def edit_wait():
     result =  """
     <html>
     <head>
-        <h1>Slate</h1>
-        <h4>please wait while others finish editing.  If you refresh this page 
+        <h4>Please wait while others finish editing.  If you refresh this page 
         you will lose you spot in line.  At the right time, you will be redirected</h4>
+
+        <h4>Another option is to visit /text/edit/{edit_id} sometime after your wait 
+        is period is done</h4>
+
         <p>your wait is {wait} seconds</p>
+
         <meta http-equiv="refresh" content="{wait}; url=/text/edit/{edit_id}" />
     </head>
     <body>
@@ -133,15 +137,11 @@ def edit(edit_id):
     result = """
     <html>
     <head>
-        <title>Slate</title>
+        <title>LittleCity</title>
         <meta http-equiv="refresh" content="{time_per_edit}; url=/" />
     </head>
     <body>
     <form id="main" action="/text" method="post">
-
-     <h1>Slate</h1>
-     <h4>feel free to modify the text below</h4>
-     
      <textarea name="text" form="main" rows="50" cols="150">
      {text}
      </textarea>
@@ -170,13 +170,11 @@ def main():
     return """
      <html>
      <head>
-        <title>Slate</title>
+        <title>LittleCity</title>
         <meta http-equiv="refresh" content="5; url=/" />
         <link rel="stylesheet" type="text/css" href="{stylesheet}">
      </head>
      <body>
-     <h1>Slate</h1>
-     <h4>feel free to modify the text below</h4>
      {text}
      <form action="text/edit" method="get"><input type="submit" value="Edit Text"></form>
      <form action="css/edit" method="get"><input type="submit" value="Edit CSS"></form>
@@ -234,10 +232,15 @@ def css_edit_wait():
     result =  """
     <html>
     <head>
-        <h1>Slate</h1>
-        <h4>please wait while others finish editing.  If you refresh this page 
-        you will lose you spot in line.  At the right time, you will be redirected</h4>
+
+        <h4>Please wait while others finish editing.  If you refresh this page 
+        you will lose your spot in line.  At the right time, you will be redirected</h4>
+
+        <h4>Another option is to visit /css/edit/{edit_id} sometime after your wait 
+        is period is done</h4>
+
         <p>your wait is {wait} seconds</p>
+        
         <meta http-equiv="refresh" content="{wait}; url=/css/edit/{edit_id}" />
     </head>
     <body>
@@ -272,14 +275,11 @@ def css_edit(edit_id):
     result = """
     <html>
     <head>
-        <title>Slate</title>
+        <title>LittleCity</title>
         <meta http-equiv="refresh" content="{time_per_edit}; url=/" />
     </head>
     <body>
     <form id="main" action="/css" method="post">
-
-     <h1>Slate</h1>
-     <h4>feel free to modify the text below</h4>
      
      <textarea name="text" form="main" rows="50" cols="150">
      {text}
