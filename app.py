@@ -29,6 +29,7 @@ def get_connection():
         host=url.hostname,
         port=url.port
     )
+    return conn
 
 
 # Setup database
