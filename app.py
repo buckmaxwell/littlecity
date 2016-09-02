@@ -5,12 +5,13 @@ from collections import OrderedDict
 import uuid
 from wsgiref.handlers import format_date_time
 from time import mktime
+import os
+import psycopg2
+import urlparse
 
 # set expires to some time in the past to avoid browser caching
 headers = {'Expires': 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'}
-
 app = Flask(__name__)
-
 
 last_text = {'text':'LAST TEXT', 'last_edit_scheduled':None}  # last edit scheduled is the end time of the 
 															  # last edit scheduled
@@ -19,6 +20,18 @@ last_css = {'text':'h1 {color: red;}', 'last_edit_scheduled':None}
 edits = OrderedDict()  # {id:UUID, start_edit:datetime, end_edit:datetime, text=str}
 style_edits = OrderedDict()
 time_per_edit = 25
+
+
+# create psycopg2 connection
+urlparse.uses_netloc.append("postgres")
+url = urlparse.urlparse(os.environ["DATABASE_URL"])
+conn = psycopg2.connect(
+    database=url.path[1:],
+    user=url.username,
+    password=url.password,
+    host=url.hostname,
+    port=url.port
+)
 
 
 # TEXT EDITING ##########################################################################################
