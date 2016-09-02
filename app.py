@@ -129,7 +129,7 @@ def edit(edit_id):
 @app.route("/")
 def main():
 
-    cur.execute("SELECT text from edits where text !=null order by end_edit desc limit 1")
+    cur.execute("SELECT * from edits order by end_edit desc")
     print cur.fetchall()
     cur.execute("SELECT text from edits where text !=null order by end_edit desc limit 1")
     try:
