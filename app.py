@@ -14,10 +14,21 @@ headers = {'Expires': 'Expires: Thu, 01 Dec 1994 16:00:00 GMT'}
 app = Flask(__name__)
 app.config['DEBUG'] = True
 
-edits = OrderedDict()  # {id:UUID, start_edit:datetime, end_edit:datetime, text=str}
-style_edits = OrderedDict()
 time_per_edit = 25
 utc=pytz.UTC
+
+
+def get_connection():
+    # create psycopg2 connection
+    urlparse.uses_netloc.append("postgres")
+    url = urlparse.urlparse(os.environ["DATABASE_URL"])
+    conn = psycopg2.connect(
+        database=url.path[1:],
+        user=url.username,
+        password=url.password,
+        host=url.hostname,
+        port=url.port
+    )
 
 
 # Setup database
@@ -27,34 +38,32 @@ CREATE TABLE IF NOT EXISTS edits (id varchar, start_edit timestamp with time zon
 CREATE TABLE IF NOT EXISTS style_edits (id varchar, start_edit timestamp with time zone, 
     end_edit timestamp with time zone, text varchar);
 """
-# create psycopg2 connection
-urlparse.uses_netloc.append("postgres")
-url = urlparse.urlparse(os.environ["DATABASE_URL"])
-conn = psycopg2.connect(
-    database=url.path[1:],
-    user=url.username,
-    password=url.password,
-    host=url.hostname,
-    port=url.port
-)
+conn = get_connection
 cur = conn.cursor()
 cur.execute(table_setup)
+conn.close()
+
 
 
 # TEXT EDITING ##########################################################################################
 
 @app.route('/text', methods=['POST'])
 def text():
+    conn = get_connection()
+    cur = conn.cursor()
     # update the postgresql record
     edit_id = request.form['edit_id']
     text = request.form['text']
     cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
     #print request.form['text']
+    conn.close()
     return 'redirecting you...', 302, {'Location': '/'}
 
 
 @app.route('/text/edit', methods=['GET'])
 def edit_wait():
+    conn = get_connection()
+    cur = conn.cursor()
     edit_id = str(uuid.uuid4())
     #edit = dict(id=edit_id, start_edit=None, end_edit=None)
 
@@ -90,12 +99,14 @@ def edit_wait():
     </head>
     <body>
     <p>""".format(wait=time_to_wait, edit_id=edit_id)
+    conn.close()
     return result, 200, headers
 
 
 @app.route('/text/edit/<edit_id>', methods=['GET'])
 def edit(edit_id):
-
+    conn = get_connection()
+    cur = conn.cursor()
     cur.execute("SELECT text from edits where text IS NOT NULL order by end_edit desc limit 1")
     try:
         last_text = cur.fetchone()[0]
@@ -114,7 +125,7 @@ def edit(edit_id):
      <h1>Slate</h1>
      <h4>feel free to modify the text below</h4>
      
-     <textarea name="text" form="main" rows="50" style="width=80%;">
+     <textarea name="text" form="main" rows="50" cols="50">
      {text}
      </textarea>
      <input name="edit_id" type="hidden" value="{edit_id}">
@@ -123,12 +134,14 @@ def edit(edit_id):
     </body>
     </html>
     """.format(text=last_text, edit_id=edit_id, time_per_edit=time_per_edit )
+    conn.close()
     return result, 200, headers
 
 
 @app.route("/")
 def main():
-
+    conn = get_connection()
+    cur = conn.cursor()
     cur.execute("SELECT * from edits order by end_edit desc")
     print cur.fetchall()
     cur.execute("SELECT text, end_edit from edits where text IS NOT NULL order by end_edit desc limit 1")
@@ -138,6 +151,7 @@ def main():
         last_text = 'Start us off why don\'t you'
 
     stylesheet = url_for('static', filename='style.css')
+    conn.close()
     return """
      <html>
      <head>
@@ -161,18 +175,23 @@ def main():
 
 @app.route('/css', methods=['POST'])
 def css():
+    conn = get_connection()
+    cur = conn.cursor()
     # update the postgresql record
     edit_id = request.form['edit_id']
     text = request.form['text']
     cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
     with open('static/style.css', 'w+') as f:
         f.write(request.form['text'])
-
+    conn.close()
     return 'redirecting you...', 302, {'Location': '/'}
 
 
 @app.route('/css/edit', methods=['GET'])
 def css_edit_wait():
+    conn = get_connection()
+    cur = conn.cursor()
+
     edit_id = str(uuid.uuid4())
     time_to_wait = 0
 
@@ -206,6 +225,7 @@ def css_edit_wait():
     </head>
     <body>
     <p>""".format(wait=time_to_wait, edit_id=edit_id)
+    conn.close()
     return result, 200, headers
 
 
