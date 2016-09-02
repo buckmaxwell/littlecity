@@ -62,7 +62,7 @@ def text():
         cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
         conn.commit()
         conn.close()
-    except UnicodeDecodeError:
+    except UnicodeEncodeError:
         print "it was not a ascii-encoded unicode string"
 
     return 'redirecting you...', 302, {'Location': '/'}
@@ -211,7 +211,7 @@ def css():
             f.write(request.form['text'])
 
         conn.close()
-    except UnicodeDecodeError:
+    except UnicodeEncodeError:
         print "string is not ascii"
     
     return 'redirecting you...', 302, {'Location': '/'}
