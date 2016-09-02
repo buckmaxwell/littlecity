@@ -112,14 +112,17 @@ def edit(edit_id):
     cur = conn.cursor()
 
     # Make sure the edit id is not expired
-    cur.execute("SELECT end_edit from edits where id=%s limit 1", (edit_id,))
+    cur.execute("SELECT end_edit from edits where id=%s limit 1;", (edit_id,))
     try:
         end_edit = cur.fetchone()[0]
+        utc.localize(datetime.datetime.utcnow())
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
             return "End time already expired", 400
         else:
             time_per_edit = (end_time - utc.localize(datetime.datetime.utcnow())).total_seconds()
-    except:
+    except Exception as e:
+        print e
+
         return "Edit id does not exist....", 404
 
     cur.execute("SELECT text from edits where text IS NOT NULL order by end_edit desc limit 1")
@@ -252,7 +255,7 @@ def css_edit(edit_id):
         style_sheet = f.read()
 
     # Make sure the edit id is not expired
-    cur.execute("SELECT end_edit from edits where id=%s limit 1", (edit_id,))
+    cur.execute("SELECT end_edit from edits where id=%s limit 1;", (edit_id,))
     try:
         end_edit = cur.fetchone()[0]
         if utc.localize(datetime.datetime.utcnow()) > end_edit:
