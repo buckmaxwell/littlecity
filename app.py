@@ -139,6 +139,8 @@ def edit(edit_id):
     cur.execute("SELECT text from edits where text IS NOT NULL order by end_edit desc limit 1")
     try:
         last_text = cur.fetchone()[0]
+        soup = bs(last_text)
+        last_text = soup.prettify()
     except:
         last_text = 'Start us off why don\'t you'
 
