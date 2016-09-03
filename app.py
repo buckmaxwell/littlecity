@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from flask import Flask, request, url_for
+from bs4 import BeautifulSoup as bs
 import datetime
 from collections import OrderedDict
 import uuid
@@ -175,21 +176,18 @@ def main():
     stylesheet = url_for('static', filename='style.css')
     about = url_for('static', filename='about.html')
     conn.close()
+
+    # get mod comment
+    with open('about.md', 'r') as f:
+        mod_comment = f.read()
+
     return """
-     <html>
-     <head>
-        <title>LittleCity</title>
-        <meta http-equiv="refresh" content="25; url=/" />
-        <link rel="stylesheet" type="text/css" href="{stylesheet}">
-     </head>
-     <body>
-     {text}
-     <form action="text/edit" method="get"><input type="submit" value="Edit Text"></form>
-     <form action="css/edit" method="get"><input type="submit" value="Edit CSS"></form>
-     <form action="{about}" method="get"><input type="submit" value="About"></form>
-     </body>
-     </html>
-    """.format(text=last_text, stylesheet=stylesheet, about=about)
+    <!DOCTYPE html>
+    <!--
+    {comment}
+    -->
+    {text}
+    """.format(text=last_text, comment=mod_comment)
 
 
 # CSS EDITING #############################################################################################
