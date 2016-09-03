@@ -179,7 +179,7 @@ def main():
      <html>
      <head>
         <title>LittleCity</title>
-        <meta http-equiv="refresh" content="5; url=/" />
+        <meta http-equiv="refresh" content="25; url=/" />
         <link rel="stylesheet" type="text/css" href="{stylesheet}">
      </head>
      <body>
