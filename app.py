@@ -164,6 +164,10 @@ def edit(edit_id):
     conn.close()
     return result, 200, headers
 
+@app.route("/ip")
+def ip():
+    return str(request.headers)
+
 
 @app.route("/")
 def main():
