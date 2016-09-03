@@ -72,11 +72,9 @@ Fixing common site issues
 
 3. The style changes in style.css do not show up
     
-    Make sure that the text still has a section called head, and that the 
-    head section has a link to the style sheet.  the style sheet is at
-    http://littlecity.herokuapp.com/style.css.  You can add a link on 
-    the text page if it is not there by adding this in an html <head> block,
-    <link href="http://littlecity.herokuapp.com/style.css" rel="stylesheet" type="text/css">
+    It's possible that someone has added a link to a different style
+    sheet in the text section that has disagreeing css.  If you can find
+    it and you don't like that, delete the reference to it.
 
 4. The page redirects somewhere else
 
