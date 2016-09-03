@@ -181,19 +181,21 @@ def main():
     with open('about.md', 'r') as f:
         mod_comment = f.read()
 
-    return "<!DOCTYPE html>\n<!--\n{comment}\n-->\n{text}\n".format(text=last_text, comment=mod_comment)
+    with open('static/style.css', 'r') as f:
+        style = f.read()
+
+    return """
+<!DOCTYPE html>
+<!--
+{comment}
+-->
+<style>
+{style}
+</style>
+{text}""".format(text=last_text, comment=mod_comment, style=style)
 
 
 # CSS EDITING #############################################################################################
-
-
-@app.route('/style.css', methods=['GET'])
-def get_css():
-    with open('static/style.css') as f:
-        result = f.read()
-
-    return result, 200, headers
-
 
 
 @app.route('/css', methods=['POST'])
