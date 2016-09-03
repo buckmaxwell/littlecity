@@ -74,9 +74,9 @@ Fixing common site issues
     
     Make sure that the text still has a section called head, and that the 
     head section has a link to the style sheet.  the style sheet is at
-    http://littlecity.herokuapp.com/static/style.css.  You can add a link on 
+    http://littlecity.herokuapp.com/style.css.  You can add a link on 
     the text page if it is not there by adding this in an html <head> block,
-    <link href="http://littlecity.herokuapp.com/static/style.css" rel="stylesheet" type="text/css">
+    <link href="http://littlecity.herokuapp.com/style.css" rel="stylesheet" type="text/css">
 
 4. The page redirects somewhere else
 

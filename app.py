@@ -175,8 +175,6 @@ def main():
     except:
         last_text = 'Start us off why don\'t you'
 
-    stylesheet = url_for('static', filename='style.css')
-    about = url_for('static', filename='about.html')
     conn.close()
 
     # get mod comment
@@ -187,6 +185,15 @@ def main():
 
 
 # CSS EDITING #############################################################################################
+
+
+@app.route('/style.css', methods=['GET'])
+def get_css():
+    with open('static/style.css') as f:
+        result = f.read()
+
+    return result, 200, headers
+
 
 
 @app.route('/css', methods=['POST'])
