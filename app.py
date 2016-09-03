@@ -145,21 +145,21 @@ def edit(edit_id):
         last_text = 'Start us off why don\'t you'
 
     result = """
-    <html>
-    <head>
-        <title>LittleCity</title>
-        <meta http-equiv="refresh" content="{time_per_edit}; url=/" />
-    </head>
-    <body>
-    <form id="main" action="/text" method="post">
-     <textarea name="text" form="main" rows="50" cols="150">
-     {text}
-     </textarea>
-     <input name="edit_id" type="hidden" value="{edit_id}">
-     <input type="submit" value="Submit">
-    </form>
-    </body>
-    </html>
+<html>
+<head>
+    <title>LittleCity</title>
+    <meta http-equiv="refresh" content="{time_per_edit}; url=/" />
+</head>
+<body>
+<form id="main" action="/text" method="post">
+ <textarea name="text" form="main" rows="50" cols="150">
+ {text}
+ </textarea>
+ <input name="edit_id" type="hidden" value="{edit_id}">
+ <input type="submit" value="Submit">
+</form>
+</body>
+</html>
     """.format(text=last_text, edit_id=edit_id, time_per_edit=time_per_edit )
     conn.close()
     return result, 200, headers
@@ -183,13 +183,7 @@ def main():
     with open('about.md', 'r') as f:
         mod_comment = f.read()
 
-    return """
-    <!DOCTYPE html>
-    <!--
-    {comment}
-    -->
-    {text}
-    """.format(text=last_text, comment=mod_comment)
+    return "<!DOCTYPE html>\n<!--\n{comment}\n-->\n{text}\n".format(text=last_text, comment=mod_comment)
 
 
 # CSS EDITING #############################################################################################
