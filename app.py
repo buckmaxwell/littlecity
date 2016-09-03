@@ -55,12 +55,13 @@ def text():
     # update the postgresql record
     edit_id = request.form['edit_id']
     text = request.form['text']
+    ip_addr = request.headers.get('X-Forwarded-For', request.remote_addr)
 
     try:
         conn = get_connection()
         cur = conn.cursor()
         text.decode('ascii')
-        cur.execute("UPDATE edits SET text=%s where id=%s;", (text, edit_id))
+        cur.execute("UPDATE edits SET text=%s, ip_addr=%s  where id=%s;", (text, ip_addr, edit_id))
         conn.commit()
         conn.close()
     except UnicodeEncodeError:
@@ -212,7 +213,9 @@ def css():
         text = request.form['text']
         text.decode('ascii')
         edit_id = request.form['edit_id']
-        cur.execute("UPDATE style_edits SET text=%s where id=%s;", (text, edit_id))
+        ip_addr = request.headers.get('X-Forwarded-For', request.remote_addr)
+
+        cur.execute("UPDATE style_edits SET text=%s, ip_addr=%s where id=%s;", (text, ip_addr, edit_id))
         conn.commit()
         with open('static/style.css', 'w+') as f:
             f.write(request.form['text'])
