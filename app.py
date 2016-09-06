@@ -172,22 +172,35 @@ def ip():
 
 @app.route("/")
 def main():
+    # Establish connection
     conn = get_connection()
     cur = conn.cursor()
+
+    # Record visitor ip address
+    ip_addr = request.headers.get('X-Forwarded-For', request.remote_addr)
+    timestamp = utc.localize(datetime.datetime.utcnow())
+    cur.execute("INSERT INTO visitors (ip_addr, timestamp) VALUES (%s, %s);", (ip_addr, timestamp))
+    conn.commit()
+
+    # Get last text
     cur.execute("SELECT text, end_edit from edits where text IS NOT NULL order by end_edit desc limit 1")
     try:
         last_text = cur.fetchone()[0]
     except:
         last_text = 'Start us off why don\'t you'
 
+    # Get last css
+    cur.execute("SELECT text, end_edit from style_edits where text IS NOT NULL order by end_edit desc limit 1")
+    try:
+        last_css = cur.fetchone()[0]
+    except:
+        last_css = ''
+
     conn.close()
 
     # get mod comment
     with open('about.md', 'r') as f:
         mod_comment = f.read()
-
-    with open('static/style.css', 'r') as f:
-        style = f.read()
 
     return """
 <!DOCTYPE html>
@@ -197,7 +210,7 @@ def main():
 <style>
 {style}
 </style>
-{text}""".format(text=last_text, comment=mod_comment, style=style)
+{text}""".format(text=last_text, comment=mod_comment, style=last_css)
 
 
 # CSS EDITING #############################################################################################
