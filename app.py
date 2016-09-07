@@ -170,6 +170,25 @@ def ip():
     return str(request.headers)
 
 
+@app.route("/unique_visitors")
+def uniq():
+    # Establish connection
+    conn = get_connection()
+    cur = conn.cursor()
+    #cur.execute("SELECT count(*) from edits where text IS NOT NULL order by end_edit desc limit 1")
+    cur.execute("SELECT count(*) FROM (SELECT count(*) AS _ FROM visitors GROUP BY ip_addr) AS uniq_ips;")
+    try:
+        unique_visitors = cur.fetchone()[0]
+        unique_visitors = {'unique_visitor_count': unique_visitor_count}
+    except:
+        unique_visitors = {'unique_visitor_count': 'There was a problem'}
+
+    conn.close()
+
+    return json.dumps(result), 200, headers
+
+
+
 @app.route("/")
 def main():
     # Establish connection
