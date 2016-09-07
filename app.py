@@ -252,7 +252,7 @@ def main():
         conn.close()
         return "Error finding most recent page"
 
-    return 'redirecting you...', 302, {'Location': '/history/{number}'.format(last_number)}
+    return 'redirecting you...', 302, {'Location': '/history/{}'.format(last_number)}
 
 
 
