@@ -191,9 +191,8 @@ def uniq():
     return json.dumps(unique_visitors), 200, headers
 
 
-
-@app.route("/")
-def main():
+@app.route("/history/<number>")
+def history(number):
     # Establish connection
     conn = get_connection()
     cur = conn.cursor()
@@ -205,18 +204,19 @@ def main():
     conn.commit()
 
     # Get last text
-    cur.execute("SELECT text, end_edit from edits where text IS NOT NULL order by end_edit desc limit 1")
+    cur.execute("SELECT text, end_edit from edits where number = %s;", (number,))
     try:
-        last_text = cur.fetchone()[0]
+        text, end_edit = cur.fetchone()
     except:
-        last_text = 'Start us off why don\'t you'
+        text = 'Start us off why don\'t you'
 
-    # Get last css
-    cur.execute("SELECT text, end_edit from style_edits where text IS NOT NULL order by end_edit desc limit 1")
+    # Get matching css
+    cur.execute("SELECT text, end_edit FROM style_edits WHERE end_edit <= %s and text is not null order by end_edit desc limit 1;", 
+        (end_edit,))
     try:
-        last_css = cur.fetchone()[0]
+        css = cur.fetchone()[0]
     except:
-        last_css = ''
+        css = ''
 
     conn.close()
 
@@ -232,7 +232,26 @@ def main():
 <style>
 {style}
 </style>
-{text}""".format(text=last_text, comment=mod_comment, style=last_css)
+{text}""".format(text=text, comment=mod_comment, style=css)
+
+
+
+@app.route("/")
+def main():
+    # Establish connection
+    conn = get_connection()
+    cur = conn.cursor()
+
+    # Get last text number
+    cur.execute("SELECT number, end_edit from edits where text IS NOT NULL order by end_edit desc limit 1;")
+    conn.close()
+    try:
+        last_number = cur.fetchone()[0]
+    except:
+        return "Error finding most recent page"
+
+    return 'redirecting you...', 302, {'Location': '/history/{number}'.format(last_number)}
+
 
 
 # CSS EDITING #############################################################################################
