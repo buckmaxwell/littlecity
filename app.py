@@ -179,9 +179,11 @@ def uniq():
     #cur.execute("SELECT count(*) from edits where text IS NOT NULL order by end_edit desc limit 1")
     cur.execute("SELECT count(*) FROM (SELECT count(*) AS _ FROM visitors GROUP BY ip_addr) AS uniq_ips;")
     try:
+
         unique_visitors = cur.fetchone()[0]
         unique_visitors = {'unique_visitor_count': unique_visitor_count}
-    except:
+    except Exception as e:
+        print e
         unique_visitors = {'unique_visitor_count': 'There was a problem'}
 
     conn.close()
