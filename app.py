@@ -51,7 +51,7 @@ def get_connection():
 @app.route('/info', methods=['GET'])
 def info():
     with open('about.md') as f:
-        result = r.read()
+        result = f.read()
 
     return result
 
