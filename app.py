@@ -215,7 +215,7 @@ def history(number):
         conn.close()
         return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
     if not new_number:
-        return 'redirecting you...', 302, {'Location': '/'}
+        return 'The page number you requested is in the future...', 404, headers
 
     # Get matching css
     cur.execute("SELECT text, end_edit FROM style_edits WHERE end_edit <= %s and text is not null order by end_edit desc limit 1;", 
