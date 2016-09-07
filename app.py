@@ -247,7 +247,8 @@ def main():
     conn.close()
     try:
         last_number = cur.fetchone()[0]
-    except:
+    except Exception as e:
+        print e
         return "Error finding most recent page"
 
     return 'redirecting you...', 302, {'Location': '/history/{number}'.format(last_number)}
