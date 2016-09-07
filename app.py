@@ -181,7 +181,7 @@ def uniq():
     try:
 
         unique_visitors = cur.fetchone()[0]
-        unique_visitors = {'unique_visitor_count': unique_visitor_count}
+        unique_visitors = {'unique_visitor_count': unique_visitors}
     except Exception as e:
         print e
         unique_visitors = {'unique_visitor_count': 'There was a problem'}
