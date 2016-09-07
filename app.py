@@ -209,10 +209,13 @@ def history(number):
         text, end_edit, new_number = cur.fetchone()
     except:
         text = 'Start us off why don\'t you'
+        new_number = None
 
-    if int(number) != int(new_number):
+    if new_number and int(number) != int(new_number):
         conn.close()
         return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
+    if not new_number:
+        return 'redirecting you...', 302, {'Location': '/'}
 
     # Get matching css
     cur.execute("SELECT text, end_edit FROM style_edits WHERE end_edit <= %s and text is not null order by end_edit desc limit 1;", 
