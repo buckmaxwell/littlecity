@@ -9,6 +9,7 @@ import psycopg2
 import urlparse
 import pytz
 import json
+import markdown
 
 
 # set expires to some time in the past to avoid browser caching
@@ -51,9 +52,11 @@ def get_connection():
 @app.route('/info', methods=['GET'])
 def info():
     with open('about.md') as f:
-        result = f.read()
+        t = f.read()
 
-    return result
+    result_html = markdown.markdown(t)
+
+    return result_html
 
 
 # TEXT EDITING ##########################################################################################
