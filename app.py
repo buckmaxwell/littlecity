@@ -211,8 +211,10 @@ def history(number):
         text = 'Start us off why don\'t you'
 
     if number != new_number:
-        conn.close()
-        return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
+        return number, new_number
+
+        #conn.close()
+        #return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
 
     # Get matching css
     cur.execute("SELECT text, end_edit FROM style_edits WHERE end_edit <= %s and text is not null order by end_edit desc limit 1;", 
