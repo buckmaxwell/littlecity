@@ -207,14 +207,10 @@ def history(number):
     cur.execute("SELECT text, end_edit, number from edits where number >= %s and text is not null order by number limit 1", (number,))
     try:
         text, end_edit, new_number = cur.fetchone()
-        print new_number
     except:
         text = 'Start us off why don\'t you'
 
     if int(number) != int(new_number):
-        print number, new_number
-        return number, new_number
-
         conn.close()
         return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
 
