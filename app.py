@@ -35,14 +35,7 @@ def get_connection():
     return conn
 
 
-conn = get_connection()
-cur = conn.cursor()
-cur.execute("SELECT id from edits order by end_edit;")
-for i, row in enumerate(cur.fetchall()):
-    id = row[0]
-    cur.execute("UPDATE edits set number_new = %s where id = %s", (i+1, id))
-    conn.commit()
-conn.close()
+
 
 
 # Setup database
