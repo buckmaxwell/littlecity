@@ -244,11 +244,12 @@ def main():
 
     # Get last text number
     cur.execute("SELECT number, end_edit from edits where text IS NOT NULL order by end_edit desc limit 1;")
-    conn.close()
     try:
         last_number = cur.fetchone()[0]
+        conn.close()
     except Exception as e:
         print e
+        conn.close()
         return "Error finding most recent page"
 
     return 'redirecting you...', 302, {'Location': '/history/{number}'.format(last_number)}
