@@ -186,7 +186,7 @@ def uniq():
 
     conn.close()
 
-    return json.dumps(result), 200, headers
+    return json.dumps(unique_visitors), 200, headers
 
 
 
