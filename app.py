@@ -204,17 +204,15 @@ def history(number):
     conn.commit()
 
     # Get last text
-    text = None
-    while not text:
-        cur.execute("SELECT text, end_edit, number from edits where number >= %s and text is not null order by number limit 1", (number,))
-        try:
-            text, end_edit, new_number = cur.fetchone()
-        except:
-            text = 'Start us off why don\'t you'
+    cur.execute("SELECT text, end_edit, number from edits where number >= %s and text is not null order by number limit 1", (number,))
+    try:
+        text, end_edit, new_number = cur.fetchone()
+    except:
+        text = 'Start us off why don\'t you'
 
-        if number != new_number:
-            conn.close()
-            return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
+    if number != new_number:
+        conn.close()
+        return 'redirecting you...', 302, {'Location': '/history/{}'.format(new_number)}
 
     # Get matching css
     cur.execute("SELECT text, end_edit FROM style_edits WHERE end_edit <= %s and text is not null order by end_edit desc limit 1;", 
