@@ -82,6 +82,36 @@ Fixing common site issues
     http://littlecity.herokuapp.com/text/edit
 
 
+API Documentation
+=================
+
+ GET / 
+ 
+  Fetch a redirect to the most recent history item
+
+ GET /history/:id
+  
+  Fetch the history item with the id given.  If the item does not exist, you will get a redirect to 
+  a oldest item that does exist, and is greater than the id supplied
+
+ POST /text
+
+  Post the full content of what the new page should look like
+
+ POST /css
+  
+  Post the full content of what the css should look like
+
+ GET /unique_vistors
+
+  Fetch the number of unique visitors that have used the site since we started counting (9/5/2016)
+  in JSON format
+
+ GET /info
+
+  Fetch info about this site and how to use it
+ 
+
 Thanks
 ======
 

@@ -47,6 +47,14 @@ def get_connection():
 #cur.execute(table_setup)
 #conn.close()
 
+# INFO ##################################################################################################
+@app.route('/info', methods=['GET'])
+def info():
+    with open('about.md') as f:
+        result = r.read()
+
+    return result
+
 
 # TEXT EDITING ##########################################################################################
 
